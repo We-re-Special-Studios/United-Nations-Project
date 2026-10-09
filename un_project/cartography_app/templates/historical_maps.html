@@ -31,9 +31,9 @@
             Infrastructure
         </a>
 
-        <a href="?type=Evaluation" class="header-filter-button {% if current_type == 'Evaluation' %}active{% endif %}">
+        {% comment %} <a href="?type=Evaluation" class="header-filter-button {% if current_type == 'Evaluation' %}active{% endif %}">
             Territory Zoning
-        </a>
+        </a> {% endcomment %}
 
         <a href="?type=Unofficial" class="header-filter-button {% if current_type == 'Unofficial' %}active{% endif %}">
             Unofficial
@@ -41,8 +41,19 @@
     </div>
 
     <hr>
+    {% if current_type == 'Official' %}
+        <div class="header-filter-buttonsss year-filter-buttons" id="year-filter-buttons">
+            <button type="button"
+                    class="header-filter-button active"
+                    data-year="all">
+                All Years
+            </button>
+        </div>
+        <hr>
+    {% endif %}
+
     {% for map in maps %}
-        <div class="map-release">
+        <div class="map-release" data-year="{{ map.map_date|date:'Y' }}">
             <h2>
                 <a href="{{ map.get_absolute_url }}"> {{map.get_type_display }} {{ map.map_date|date:"F j, Y" }}</a>
 
@@ -109,7 +120,7 @@
                 {{ map.changes|markdownify }}
             </div>
         </div>
-        <hr>
+        <hr class="map-release-divider">
     {% empty %}
         <p>No maps have been archived yet.</p>
     {% endfor %}
