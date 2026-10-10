@@ -1,0 +1,9 @@
+{% comment %} This template is needed to add the "Balance Sheet Ordering" to the top if the item section admin page {% endcomment %}
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="{{ ordering_url }}">Balance Sheet Ordering</a>
+    </li>
+    {{ block.super }}
+{% endblock %}

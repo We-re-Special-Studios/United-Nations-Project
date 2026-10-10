@@ -1,0 +1,72 @@
+.balance-tables {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 16px;
+    align-items: start;
+    overflow-x: auto;
+}
+
+.balance-table {
+    min-width: 220px;
+    padding: 12px;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 6px;
+}
+
+.balance-table h2 {
+    font-size: 16px;
+}
+
+.balance-section {
+    margin: 12px 0;
+    padding: 8px;
+    background: var(--darkened-bg, #f5f5f5);
+    border-radius: 5px;
+}
+
+.balance-section h3 {
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.item-list {
+    min-height: 40px;
+    list-style: none;
+    padding: 4px;
+    margin: 0;
+}
+
+.sortable-item {
+    padding: 8px;
+    margin: 4px 0;
+    background: var(--body-bg, white);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    cursor: grab;
+    overflow-wrap: anywhere;
+}
+
+.sortable-item:active {
+    cursor: grabbing;
+}
+
+.drag-handle {
+    margin-right: 6px;
+    color: var(--body-quiet-color, #777);
+}
+
+.empty-message {
+    padding: 8px;
+    color: var(--body-quiet-color, #777);
+    font-size: 12px;
+}
+
+.sortable-ghost {
+    opacity: 0.35;
+}
+
+@media (max-width: 900px) {
+    .balance-tables {
+        grid-template-columns: repeat(5, minmax(220px, 1fr));
+    }
+}

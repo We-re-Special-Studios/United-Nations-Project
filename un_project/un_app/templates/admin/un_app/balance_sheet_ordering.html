@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/admin/balance_sheet_ordering_styles.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" defer></script>
+    <script src="{% static 'js/admin/balance_sheet_ordering.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div id="balance-sheet-ordering" data-save-url="{{ save_url }}">
+    <p>
+        Drag items between sections or up and down within a section.
+        Changes are saved automatically.
+    </p>
+
+    <div class="balance-tables">
+        {% for table in tables %}
+            <div class="balance-table">
+                <h2>Table {{ table.number }}</h2>
+
+                {% for section in table.sections %}
+                    <div class="balance-section">
+                        <h3>{{ section.name }}</h3>
+
+                        <ul class="item-list" data-section-id="{{ section.id }}">
+                            {% for item in section.items.all %}
+                                <li class="sortable-item" data-item-id="{{ item.id }}">
+                                    <span class="drag-handle">☰</span>
+                                    {{ item.name }}
+                                </li>
+                            {% empty %}
+                                <li class="empty-message">Drop items here</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% empty %}
+                    <p>No sections in this table yet.</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<br>
+<p id="save-status" role="status">Ready.</p>
+{% endblock %}
