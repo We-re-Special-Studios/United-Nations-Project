@@ -6,6 +6,35 @@ from decimal import Decimal
 #from .nation_models import Nation
 #from .company_models import Company
 
+class ItemSection(models.Model):
+    TABLE_CHOICES = [
+        (1, "Table 1"),
+        (2, "Table 2"),
+        (3, "Table 3"),
+        (4, "Table 4"),
+        (5, "Table 5"),
+    ]
+
+    name = models.CharField(max_length=100)
+    table_number = models.PositiveSmallIntegerField(
+        choices=TABLE_CHOICES,
+        default=1,
+        db_index=True,
+    )
+    ordering = models.PositiveIntegerField(
+        default=0,
+        db_index=True,
+    )
+
+    class Meta:
+        ordering = ["table_number", "ordering", "id"]
+        verbose_name = "Item Ordering Section"
+        verbose_name_plural = "Item Ordering Sections"
+
+    def __str__(self):
+        return f"{self.name}"
+
+# --------------------------------------------------------------------
 class Item(models.Model):
     FIXED_PRICE = 'fixed_price'
     MARKET_RATE = 'market_rate'
@@ -23,9 +52,13 @@ class Item(models.Model):
     note = models.CharField(max_length=255, blank=True, help_text="Used for short note about an oddity with the item")  # Optional note field
     image_name = models.CharField(max_length=255, blank=True, help_text="Image name and used for Minecraft Wiki link")
     special_image_name = models.CharField(max_length=255, blank=True, help_text="Overrided image_name for the image, use for when the wiki link does not match the image name")
-    ordering = models.IntegerField(default=0)  # Field for manual ordering (100's for first table, 200's for second, etc. (ex: 101, 203, 459))
+    section = models.ForeignKey(ItemSection, on_delete=models.PROTECT, related_name="items", null=True, blank=True)
+    ordering = models.PositiveIntegerField(default=0)  # Field for manual ordering
     # Precalculated values:
     market_value = models.DecimalField(max_digits=20, decimal_places=6, default=Decimal('0'))
+    
+    class Meta:
+        ordering = ["ordering", "id"]
 
     def __str__(self):
         return f'{self.name}  ({self.ordering})'
@@ -198,3 +231,5 @@ class ItemFixedPriceComponent(models.Model):
     def related_item_counts(self):
         """Get all ItemCount instances related to this component's item."""
         return ItemCount.objects.filter(item=self.item)
+    
+    # --------------------------------------------------------------------

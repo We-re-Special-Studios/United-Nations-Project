@@ -3,6 +3,7 @@ from . import models
 from django.utils.html import format_html
 from django import forms
 from django.db.models import Count, Q
+from adminsortable2.admin import (SortableAdminMixin, SortableInlineAdminMixin, SortableAdminBase)
 
 #admin.site.register(models.Nation)
 admin.site.register(models.NationHistory)
@@ -35,12 +36,25 @@ class NationAdmin(admin.ModelAdmin):
 class CompanyAdmin(admin.ModelAdmin):
     autocomplete_fields = ['headquarters']
 
+class ItemInline(SortableInlineAdminMixin, admin.TabularInline):
+    model = models.Item
+    extra = 0
+    fields = ("name", "price_type", "ordering")
+    show_change_link = True
+
+@admin.register(models.ItemSection)
+class ItemSectionAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("name", "table_number", "ordering")
+    list_filter = ("table_number",)
+    search_fields = ("name",)
+    inlines = [ItemInline]
 
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price_type', 'ordering', 'market_value')  
+    list_display = ('name', 'price_type', 'market_value', "section", 'ordering')  
     search_fields = ('name', 'description', 'note', 'image_name')      
-    list_filter = ('price_type',) 
+    list_filter = ("section__table_number", "section", "price_type")
+    list_select_related = ("section",)
     ordering = ('ordering',)
     
 #-------------------------------------------------------------------------------

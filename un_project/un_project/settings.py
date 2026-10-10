@@ -72,11 +72,12 @@ INSTALLED_APPS = [
     'rest_framework',     # Django REST Framework for API functionality
     'un_app',             # Your main app containing the financial models and stuff
     'un_records_app',     # Used for records stuff like resolutions
-    'cartography_app', # Used for maps
+    'cartography_app',    # Used for maps
     'un_api',             # New app for API views
     'website',            # Main website app
     'players_api',
     'corsheaders',        # CORS headers for api and login usage
+    "adminsortable2",
 ]
 
 MIDDLEWARE = [
