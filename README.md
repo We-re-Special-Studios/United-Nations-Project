@@ -142,7 +142,7 @@ Running the server locally:
             - [x] Filter out nether/end buildings
             - [ ] Extended map to show more land
         - [ ] Button that displays railroad/infrastructure routes
-        - [ ] Somehow display historical/informative maps
+        - [X] Somehow display historical/informative maps
 - **<ins>Records Document</ins>**
     - [x] UN Charter & amendments
         - [x] Past charters
