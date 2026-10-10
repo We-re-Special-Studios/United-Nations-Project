@@ -88,7 +88,7 @@
     
     <!-- Display Item Information in three Tables Side by Side -->
     <div class="item-table-container">
-        {% for items_part in items_parts %}
+        {% for table in item_tables %}
             <div class="item-table">
                 <table>
                     <thead>
@@ -99,33 +99,48 @@
                             <th>Number Owned</th>
                         </tr>
                     </thead>
+
                     <tbody style="font-size: 0.9em;">
-                        {% for item in items_part %}
-                            {% if 'Section Divider' in item.name %}
+                        {% for section in table.sections %}
+                            {% for item in section.items %}
+                                {% if 'Section Divider' in item.name %}
+                                    <tr>
+                                        <td colspan="4" style="background-color: transparent;">&nbsp;</td>
+                                    </tr>
+                                {% else %}
+                                    <tr style="font-size: 0.9em;">
+                                        <td class="item-name">{{ item.name }}</td>
+                                        <td class="right-align">
+                                            {{ item.total_value|custom_decimal_places }}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ item.market_value|custom_decimal_places }}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ item.count|stringformat:"g" }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% empty %}
                                 <tr>
-                                    <td colspan="4" style="background-color: transparent;">&nbsp;</td>
+                                    <td colspan="4">No items in this section.</td>
                                 </tr>
-                            {% else %}
-                                <tr style="font-size: 0.9em;">
-                                    <td class="item-name">{{ item.name }} {{ item.new_ordering }}</td>
-                                    <td class="right-align">{{ item.total_value|custom_decimal_places }}</td>
-                                    <td class="right-align">{{ item.market_value|custom_decimal_places }}</td>
-                                    <td class="right-align">{{ item.count|stringformat:"g" }}</td>
-                                </tr>
-                            {% endif %}
+                            {% endfor %}
                         {% empty %}
                             <tr>
-                                <td colspan="4">No items found.</td>
+                                <td colspan="4">No sections found.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         {% endfor %}
-        
-        <!-- Add a row to display the sum of total values -->
+
         <div class="total-value-sum">
-            <h3>Total Value of All Items: {{ nation.total_item_asset_value|custom_decimal_places }}</h3>
+            <h3>
+                Total Value of All Items:
+                {{ nation.total_item_asset_value|custom_decimal_places }}
+            </h3>
         </div>
     </div>
     

@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import F, Value, Sum, DecimalField
+from django.db.models import F, Value, Sum, DecimalField, Prefetch
 from django.db.models.functions import Coalesce
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
-from ..models import Nation, Denomination, Building, Item, ItemCount, LiquidAssetContainer, Liability, Company, CompanyShareholder
+from ..models import Nation, Denomination, Building, Item, ItemCount, ItemSection, LiquidAssetContainer, Liability, Company, CompanyShareholder
 
 def nation_balance_sheet(request, nation_abbreviation):
     # Get the nation by its abbreviation
@@ -20,16 +20,9 @@ def nation_balance_sheet(request, nation_abbreviation):
         partial_price=F('partialbuildingownership__partial_price')
     ).distinct()
 
-    # Fetch all items and sort by the manual 'ordering' field
-    all_items = Item.objects.all().order_by('ordering')  # Sorted by manual ordering
-    items_with_count = ItemCount.objects.filter(nation=nation)
-
-    # Create a dictionary to store count and total_values for each item
-    item_count_dict = {
-        item_count.item_id: (item_count.count, item_count.total_value) 
-        for item_count in items_with_count
-    }
-
+    # --------------------------------------------------
+    # Liquid assets
+    # --------------------------------------------------
     # Fetch and sort liquid asset containers by ordering
     liquid_containers = LiquidAssetContainer.objects.filter(nation=nation).order_by('ordering')
     liquid_asset_data = []
@@ -53,39 +46,92 @@ def nation_balance_sheet(request, nation_abbreviation):
             'counts': container_counts,
             'total_in_diamonds': container_total_in_diamonds,
         })
+        
+    # --------------------------------------------------
+    # Owned items grouped by ItemSection and table number
+    # --------------------------------------------------
+    # Fetch item counts for this nation.
+    items_with_count = ItemCount.objects.filter(nation=nation)
 
+    item_count_dict = {
+        item_count.item_id: (item_count.count, item_count.total_value)
+        for item_count in items_with_count
+    }
 
-    # Calculate total value and market price for each item
-    item_data = []
-    for item in all_items:
-        item_name = item.name if item.name else "Unnamed Item"
-        market_value = item.market_value if item.market_value else Decimal('0')
+    # Create the five balance sheet tables and their sections.
+    item_tables = {
+        number: {
+            "number": number,
+            "sections": [],
+        }
+        for number in range(1, 6)
+    }
 
-        # Get the count and total_value for the item, defaulting to 0 if not present
-        count, total_value = item_count_dict.get(item.id, (0, 0))
+    sections = (
+        ItemSection.objects
+        .prefetch_related(
+            Prefetch(
+                "items",
+                queryset=Item.objects.order_by("ordering", "id"),
+            )
+        )
+        .order_by("table_number", "ordering", "id")
+    )
 
-        item_data.append({
-            'name': item_name,
-            'market_value': market_value,
-            'count': count,
-            'total_value': total_value,
-            'ordering': item.ordering,  # Ensure ordering is included for distribution
+    assigned_item_ids = set()
+
+    for section in sections:
+        section_items = []
+
+        for item in section.items.all():
+            assigned_item_ids.add(item.id)
+
+            count, total_value = item_count_dict.get(
+                item.id, (0, Decimal("0"))
+            )
+
+            section_items.append({
+                "name": item.name or "Unnamed Item",
+                "market_value": item.market_value or Decimal("0"),
+                "count": count,
+                "total_value": total_value,
+            })
+
+        item_tables[section.table_number]["sections"].append({
+            "name": section.name,
+            "items": section_items,
         })
-    
-    # Distribute items based on their 'ordering' value
-    items_part1, items_part2, items_part3, items_part4, items_part5 = [], [], [], [], []
-    for item in item_data:
-        if 100 <= item['ordering'] < 200:
-            items_part1.append(item)  # 100's range goes into items_part1
-        elif 200 <= item['ordering'] < 300:
-            items_part2.append(item)  # 200's range goes into items_part2
-        elif 300 <= item['ordering'] < 400:
-            items_part3.append(item)  # 300's range goes into items_part3
-        elif 400 <= item['ordering'] < 500:
-            items_part4.append(item)  # 400's range goes into items_part4
-        elif 500 <= item['ordering'] < 600:
-            items_part5.append(item)  # 500's range goes into items_part5
 
+    # Keep items without a section visible rather than silently omitting them.
+    unassigned_items = Item.objects.filter(section__isnull=True).order_by("ordering", "id")
+    unassigned_data = []
+
+    for item in unassigned_items:
+        count, total_value = item_count_dict.get(
+            item.id, (0, Decimal("0"))
+        )
+
+        unassigned_data.append({
+            "name": item.name or "Unnamed Item",
+            "market_value": item.market_value or Decimal("0"),
+            "count": count,
+            "total_value": total_value,
+        })
+        
+    item_tables = list(item_tables.values())
+
+    if unassigned_data:
+        item_tables.append({
+            "number": "Unassigned",
+            "sections": [{
+                "name": "Unassigned Items",
+                "items": unassigned_data,
+            }],
+        })
+
+    # --------------------------------------------------
+    # Liabilities
+    # --------------------------------------------------
     # Fetch liabilities where this nation is the debtor
     nation_content_type = ContentType.objects.get_for_model(Nation)
     liabilities = Liability.objects.filter(
@@ -171,7 +217,7 @@ def nation_balance_sheet(request, nation_abbreviation):
     'nation': nation,
     'buildings': buildings,
     'partial_buildings': partial_buildings,
-    'items_parts': [items_part1, items_part2, items_part3, items_part4, items_part5],  # Pass as a single list
+    'item_tables': item_tables,
     'denominations': denominations,
     'liquid_asset_data': liquid_asset_data,
     'liabilities': liabilities,
