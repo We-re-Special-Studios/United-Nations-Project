@@ -317,3 +317,12 @@ h6 {
 .resolution-search a {
     font-size: 0.9rem;
 }
+
+.resolution-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.resolution-title a:hover {
+    text-decoration: none;
+}

@@ -19,7 +19,19 @@
     {% for group in charter_groups %}
         {% for executive_order in group.list %}
             <div>
-                <h2>Executive Order No. {{ executive_order.number }}</h2>
+                <h2 class="resolution-title">
+                    <a href="{{ executive_order.get_absolute_url }}">
+                        Executive Order No. {{ executive_order.number }}
+                    </a>
+
+                    <button
+                        class="copy-link-btn"
+                        type="button"
+                        title="Copy link"
+                        onclick="copyLink('{{ request.scheme }}://{{ request.get_host }}{{ executive_order.get_absolute_url }}', this)">
+                        🔗
+                    </button>
+                </h2>
                 <p>
                     ({{ executive_order.date|date:"n/j/Y" }}) &nbsp;&nbsp;Ordered By: {{ executive_order.ordered_by }}
                     {% if executive_order.void %}<strong>(Void, {{ executive_order.invalidation_date|date:"n/j/Y" }})</strong>{% endif %}
@@ -47,5 +59,5 @@
 {% endblock %}
 
 {% block extra_js %}
-
+<script src="{% static 'js/copy_link.js' %}"></script>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from un_app.models import Nation
 
 class ExecutiveOrder(models.Model):
@@ -14,6 +15,9 @@ class ExecutiveOrder(models.Model):
     
     class Meta:
         unique_together = ('number', 'charter')
+        
+    def get_absolute_url(self):
+        return reverse('executive_order_detail',kwargs={'charter': self.charter, 'number': self.number,})
     
     def clean(self):
         # Ensure that invalidation_date is only set when void or repealed is True

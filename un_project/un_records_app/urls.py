@@ -11,6 +11,7 @@ urlpatterns = [
     path('treaties', treaties, name='treaties'),
     path('treaties/<slug:slug>/', treaty_detail, name='treaty_detail'),
     path('executive_orders', executive_orders, name='executive_orders'),
+    path('executive-orders/<int:charter>/<int:number>/', executive_order_detail, name='executive_order_detail'),
     path('alliances', alliances, name='alliances'),
     path('declaration_of_wars', declaration_of_wars, name='declaration_of_wars'),
     path('national_constitution', national_constitutions, name='national_constitution'),

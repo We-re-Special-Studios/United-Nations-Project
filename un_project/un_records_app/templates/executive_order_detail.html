@@ -1,0 +1,83 @@
+{% extends 'records_base.html' %}
+{% load static %}
+{% load markdown_extras %}
+{% load custom_filters %}
+
+{% block title %}
+Executive Order No. {{ executive_order.number }}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/records_styles.css' %}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="article">
+    <meta property="og:title"
+          content="Executive Order No. {{ executive_order.number }}">
+    <meta property="og:description"
+          content="{{ executive_order.body|preview_text:200 }}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+    <meta property="article:published_time"
+          content="{{ executive_order.date|date:'c' }}">
+    <meta property="article:tag" content="Executive Order">
+
+    <meta name="description"
+          content="United Nations Executive Order No. {{ executive_order.number }} - {{ executive_order.body|preview_text:150 }}">
+
+    <meta name="twitter:card" content="summary">
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 class="resolution-title">
+        Executive Order No. {{ executive_order.number }}
+        <button
+            class="copy-link-btn"
+            type="button"
+            title="Copy link"
+            onclick="copyLink('{{ request.scheme }}://{{ request.get_host }}{{ executive_order.get_absolute_url }}', this)">
+            🔗
+        </button>
+    </h1>
+
+    <p>
+        Charter {{ executive_order.charter }}
+        &nbsp;&nbsp;
+        ({{ executive_order.date|date:"n/j/Y" }})
+        &nbsp;&nbsp;
+        Ordered By: {{ executive_order.ordered_by }}
+
+        {% if executive_order.void %}
+            <strong>
+                (Void, {{ executive_order.invalidation_date|date:"n/j/Y" }})
+            </strong>
+        {% endif %}
+
+        {% if executive_order.repealed %}
+            <strong>
+                (Repealed, {{ executive_order.invalidation_date|date:"n/j/Y" }})
+            </strong>
+        {% endif %}
+    </p>
+
+    <hr>
+
+    <div class="resolution-content">
+        <div class="resolution-text">
+            {{ executive_order.body|markdownify }}
+        </div>
+    </div>
+    <br>
+    <p>
+        <a href="{% url 'executive_orders' %}">
+            ← Back to all Executive Orders
+        </a>
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/copy_link.js' %}"></script>
+{% endblock %}

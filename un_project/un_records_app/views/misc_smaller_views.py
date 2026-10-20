@@ -13,10 +13,6 @@ def charter(request):
     charter = Charter.objects.prefetch_related(Prefetch('amended_charter', queryset=CharterAmendment.objects.order_by('date'))).order_by('-date')
     return render(request, 'charter.html', {'charter': charter})
 
-def executive_orders(request):
-    executive_orders = ExecutiveOrder.objects.all().order_by('-charter', '-date', '-number')
-    return render(request, 'executive_orders.html', {'executive_orders': executive_orders})
-
 def alliances(request):
     # Prefetch images to avoid N+1 queries while maintaining date ordering
     alliances = Alliance.objects.prefetch_related('images').all().order_by('-date')
