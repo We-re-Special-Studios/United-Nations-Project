@@ -494,3 +494,34 @@ img {
         display: flex; /* show nav when active */
     }
 }
+
+
+
+.legacy-links {
+    text-align: left;
+    max-width: 400px;
+}
+
+.legacy-links summary {
+    cursor: pointer;
+    display: flex;
+    align-items: left;
+    justify-content: flex-start;
+    gap: .4em;
+    color: #333;
+    font-weight: 600;
+}
+
+.legacy-links summary::after {
+    content: "⌄";
+    display: inline-block;
+    font-size: 18px;
+    line-height: 0.5;
+    position: relative;
+    top: -2px;
+    transition: transform 0.2s ease;
+}
+
+.legacy-links[open] summary::after {
+    transform: rotate(180deg);
+}

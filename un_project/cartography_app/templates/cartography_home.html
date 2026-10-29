@@ -9,12 +9,14 @@
 {% block content %}
     <h1>Welcome to the United Nations Cartography Commission</h1>
     
-    <p>This section of the website aims to replace the historical maps found in the UN Records Document below. This is still under construction.</p>
+    <p>This section of the website aims to replace the historical maps found in the UN Records Document below.</p>
     
-    <ul>
-        <li><a href="https://docs.google.com/document/d/10xtooDJzp5dQ9XUCccsWqtzG-gqHBvcr7gf0sgUIs-k/edit?usp=sharing" target="_blank">United Nations Official Records Document</a></li>
-    </ul>
-
+    <details class="legacy-links">
+        <summary>View Original Documents <span class="chevron"></span></summary>
+        <ul>
+            <li><a href="https://docs.google.com/document/d/10xtooDJzp5dQ9XUCccsWqtzG-gqHBvcr7gf0sgUIs-k/edit?usp=sharing" target="_blank">United Nations Official Records Document</a></li>
+        </ul>
+    </details>
 
     <img src="{% static 'images/un_seal.png' %}" alt="United Nations Seal" class="seal-image">
 {% endblock %}
