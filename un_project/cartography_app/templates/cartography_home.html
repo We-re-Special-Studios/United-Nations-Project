@@ -9,6 +9,11 @@
 {% block content %}
     <h1>Welcome to the United Nations Cartography Commission</h1>
     
+    <div class="button-container">
+        <a href="{% url 'historical_maps' %}" class="big-button">Maps</a>
+        <a href="{% url 'interactive_un_map' %}" class="big-button">Interactive Map</a>
+    </div>
+
     <p>This section of the website aims to replace the historical maps found in the UN Records Document below.</p>
     
     <details class="legacy-links">

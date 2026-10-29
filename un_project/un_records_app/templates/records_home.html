@@ -9,6 +9,16 @@
 {% block content %}
     <h1>Welcome to the United Nations Records</h1>
     
+    <div class="button-container">
+        <a href="{% url 'charter' %}" class="big-button">UN Charter</a>
+        <a href="{% url 'resolutions' %}" class="big-button">Resolutions</a>
+        <a href="{% url 'treaties' %}" class="big-button">Treaties</a>
+    </div>
+    <div class="button-container">
+        <a href="{% url 'executive_orders' %}" class="big-button">Executive Orders</a>
+        <a href="{% url 'court_cases' %}" class="big-button">Court Cases</a>
+    </div>
+
     <p>This website aims to replace our complex spreadsheets with a better, more efficient solution that is faster and allows us to do more stuff:</p>
     
     <details class="legacy-links">

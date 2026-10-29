@@ -9,6 +9,16 @@
 {% block content %}
     <h1>Welcome to the United Nations Financial Records</h1>
     
+    <div class="button-container">
+        <a href="{% url 'building_list' %}" class="big-button">Buildings</a>
+        <a href="{% url 'item_detail_selector' %}" class="big-button">Items</a>
+        <a href="{% url 'player_list' %}" class="big-button">Players</a>
+    </div>
+    <div class="button-container">
+        {% comment %} TODO: Add balance sheets template that displays all options that connects to this button {% endcomment %}
+        {% comment %} <a href="{% url 'executive_orders' %}" class="big-button">Balance Sheets</a> {% endcomment %}
+    </div>
+
     <p>This website aims to replace our complex spreadsheets with a better, more efficient solution that is faster and allows us to do more stuff:</p>
 
     <details class="legacy-links">
